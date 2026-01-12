@@ -1,0 +1,110 @@
+<div class="product-selector">
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchInput($event)"
+        (keydown)="onKeyDown($event)"
+        (focus)="onInputFocus()"
+        (blur)="onInputBlur()"
+        placeholder="Search products by name, code, category, or brand..."
+        autocomplete="off"
+        role="combobox"
+        [attr.aria-expanded]="isDropdownOpen"
+        [attr.aria-activedescendant]="highlightedIndex >= 0 ? 'product-' + highlightedIndex : null"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+      />
+      
+      <div class="input-actions">
+        <button 
+          *ngIf="selectedProduct" 
+          type="button" 
+          class="clear-btn"
+          (click)="clearSelection()"
+          title="Clear selection"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        
+        <button 
+          type="button" 
+          class="dropdown-toggle"
+          (click)="toggleDropdown()"
+          [class.active]="isDropdownOpen"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Dropdown -->
+    <div 
+      class="dropdown"
+      [class.open]="isDropdownOpen"
+      *ngIf="isDropdownOpen"
+    >
+      <div class="dropdown-content" role="listbox" aria-label="Product options">
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="loading-item" role="status" aria-live="polite">
+          <div class="loading-spinner"></div>
+          <span>Loading products...</span>
+        </div>
+        
+        <!-- No results -->
+        <div *ngIf="!isLoading && filteredProducts.length === 0" class="no-results" role="status">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="21 21l-4.35-4.35"></path>
+          </svg>
+          <span>No products found</span>
+        </div>
+        
+        <!-- Product list -->
+        <div 
+          *ngFor="let product of filteredProducts; trackBy: trackByItemCode; let i = index"
+          class="product-item"
+          (click)="selectProduct(product)"
+          (mouseenter)="onMouseEnter(i)"
+          [class.selected]="selectedProduct?.itemCode === product.itemCode"
+          [class.highlighted]="isHighlighted(i)"
+          [id]="'product-' + i"
+          role="option"
+          [attr.aria-selected]="selectedProduct?.itemCode === product.itemCode"
+        >
+          <div class="product-main">
+            <div class="product-header">
+              <div class="product-header-left">
+                <span class="product-code">{{ product.itemCode }}</span>
+                <span *ngIf="isRecentProduct(product)" class="recent-badge" title="Recently used">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6l4 4"></path>
+                    <path d="m21 9-9 9-9-9"></path>
+                  </svg>
+                  Recent
+                </span>
+              </div>
+              <span class="product-price">₹{{ product.unitPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="product-description">{{ product.description }}</div>
+          </div>
+          
+          <div class="product-meta">
+            <span class="product-category">{{ product.category }}</span>
+            <span class="product-subcategory" *ngIf="product.subcategory">{{ product.subcategory }}</span>
+            <span class="product-brand" *ngIf="product.brand">{{ product.brand }}</span>
+            <span class="product-unit">{{ product.unit }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

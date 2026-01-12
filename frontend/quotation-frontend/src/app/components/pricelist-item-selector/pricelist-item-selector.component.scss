@@ -1,0 +1,578 @@
+.pricelist-selector-container {
+  position: relative;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.search-input-wrapper {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(59, 130, 246, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.03);
+
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.1);
+  }
+
+  &.dropdown-open {
+    border-color: rgba(59, 130, 246, 0.5);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.2);
+  }
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 24px;
+  padding-right: 48px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1f2937;
+  border-radius: 16px;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  &:focus::placeholder {
+    color: #d1d5db;
+  }
+}
+
+.input-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.clear-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.loading-spinner {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pricelist-dropdown {
+  position: absolute;
+  top: calc(100% - 8px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: 500px;
+  overflow-y: auto;
+  animation: dropdownSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 100%;
+  width: max-content;
+  max-width: 800px;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.5);
+    }
+  }
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-section {
+  padding: 16px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  // Add scrolling for recent items section
+  &.recent-items-section {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-bottom: 8px;
+    
+    /* Custom scrollbar for recent items */
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 2px;
+      margin: 8px 0;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 2px;
+      
+      &:hover {
+        background: rgba(16, 185, 129, 0.5);
+      }
+    }
+  }
+  
+  // Also support the :has selector for modern browsers
+  &:has(.recent-item) {
+    max-height: 200px;
+    overflow-y: auto;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 2px;
+      margin: 8px 0;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 2px;
+      
+      &:hover {
+        background: rgba(16, 185, 129, 0.5);
+      }
+    }
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  gap: 8px;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  .item-count {
+    margin-left: auto;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+  }
+}
+
+// Recent items scrollable container
+.recent-items-container {
+  max-height: 180px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Custom scrollbar for recent items container */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: 2px;
+    margin: 4px 0;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.3);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+    
+    &:hover {
+      background: rgba(16, 185, 129, 0.5);
+    }
+  }
+  
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.3) rgba(16, 185, 129, 0.05);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  gap: 16px;
+  min-height: auto;
+
+  &:hover,
+  &.highlighted {
+    background: rgba(59, 130, 246, 0.05);
+    
+    .item-description {
+      color: #1e40af;
+    }
+    
+    .item-price {
+      color: #1e40af;
+      font-weight: 600;
+    }
+  }
+
+  &.recent-item:hover,
+  &.recent-item.highlighted {
+    background: rgba(16, 185, 129, 0.05);
+    
+    .item-description {
+      color: #059669;
+    }
+    
+    .item-price {
+      color: #059669;
+      font-weight: 600;
+    }
+    
+    .recent-badge {
+      background: #059669;
+      color: white;
+    }
+  }
+}
+
+.item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 12px;
+  min-height: auto;
+}
+
+.item-description {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  transition: color 0.2s ease;
+  flex: 1;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.4;
+  max-width: none;
+}
+
+.item-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #059669;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.item-meta {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recent-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.category-badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  // Category color mapping
+  &[data-category="physics-lab"] {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+  }
+
+  &[data-category="chemistry-lab"] {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+  }
+
+  &[data-category="biology-lab"] {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+  }
+
+  &[data-category="safety-equipment"] {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+  }
+
+  &[data-category="furniture"] {
+    background: rgba(168, 85, 247, 0.1);
+    color: #7c3aed;
+  }
+
+  &[data-category="seating"] {
+    background: rgba(236, 72, 153, 0.1);
+    color: #be185d;
+  }
+
+  &[data-category="storage"] {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+  }
+
+  &[data-category="plumbing"] {
+    background: rgba(20, 184, 166, 0.1);
+    color: #0d9488;
+  }
+
+  &[data-category="electrical"] {
+    background: rgba(251, 191, 36, 0.1);
+    color: #ca8a04;
+  }
+
+  &[data-category="general"] {
+    background: rgba(107, 114, 128, 0.1);
+    color: #4b5563;
+  }
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+
+  svg {
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  small {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+
+  svg {
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #6b7280;
+  }
+
+  small {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .search-input {
+    font-size: 16px; // Prevent zoom on mobile
+    padding: 14px 20px;
+    padding-right: 44px;
+  }
+
+  .pricelist-dropdown {
+    max-height: 350px;
+    max-width: calc(100vw - 32px);
+  }
+
+  .dropdown-item {
+    padding: 14px 16px;
+  }
+
+  .item-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .item-price {
+    align-self: flex-end;
+  }
+  
+  .item-description {
+    font-size: 13px;
+  }
+
+  .section-header {
+    padding: 0 16px 8px;
+  }
+
+  .no-results,
+  .empty-state {
+    padding: 30px 16px;
+  }
+  
+  .recent-items-container {
+    max-height: 150px; // Smaller on mobile
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .search-input-wrapper {
+    border: 2px solid #000;
+    background: #fff;
+  }
+
+  .pricelist-dropdown {
+    border: 2px solid #000;
+    background: #fff;
+  }
+
+  .dropdown-item {
+    &:hover,
+    &.highlighted {
+      background: #000;
+      color: #fff;
+      
+      .item-description,
+      .item-price {
+        color: #fff;
+      }
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

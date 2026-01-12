@@ -1,0 +1,146 @@
+<div class="multi-product-selector">
+  <!-- Selected Products Summary -->
+  <div class="selected-products-summary" *ngIf="selectedProducts.length > 0">
+    <div class="summary-header">
+      <h4>Selected Parts ({{ getSelectedProductsCount() }})</h4>
+      <div class="summary-actions">
+        <span class="total-price">Total: ₹{{ getSelectedProductsTotalPrice() | number:'1.2-2' }}</span>
+        <button 
+          type="button" 
+          class="clear-all-btn"
+          (click)="clearAllSelections()"
+          title="Clear all selections">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Clear All
+        </button>
+      </div>
+    </div>
+    
+    <div class="selected-products-list">
+      <div 
+        *ngFor="let product of selectedProducts; trackBy: trackByItemCode"
+        class="selected-product-chip">
+        <div class="chip-content">
+          <span class="chip-code">{{ product.itemCode }}</span>
+          <span class="chip-description">{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</span>
+          <span class="chip-price">₹{{ product.unitPrice | number:'1.2-2' }}</span>
+        </div>
+        <button 
+          type="button"
+          class="chip-remove"
+          (click)="removeProduct(product.id)"
+          title="Remove this product">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Container -->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchInput($event)"
+        (keydown)="onKeyDown($event)"
+        (focus)="onInputFocus()"
+        (blur)="onInputBlur()"
+        placeholder="Search multiple parts from pricelist (click to select/deselect)..."
+        autocomplete="off"
+        role="combobox"
+        [attr.aria-expanded]="isDropdownOpen"
+        [attr.aria-activedescendant]="highlightedIndex >= 0 ? 'product-' + highlightedIndex : null"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+      />
+      
+      <div class="input-actions">
+        <button 
+          type="button" 
+          class="dropdown-toggle"
+          (click)="toggleDropdown()"
+          [class.active]="isDropdownOpen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Dropdown -->
+    <div 
+      class="dropdown"
+      [class.open]="isDropdownOpen"
+      *ngIf="isDropdownOpen">
+      <div class="dropdown-content" role="listbox" aria-label="Product options">
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="loading-item" role="status" aria-live="polite">
+          <div class="loading-spinner"></div>
+          <span>Loading pricelist...</span>
+        </div>
+        
+        <!-- No results -->
+        <div *ngIf="!isLoading && filteredProducts.length === 0" class="no-results" role="status">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="21 21l-4.35-4.35"></path>
+          </svg>
+          <span>No products found in pricelist</span>
+        </div>
+        
+        <!-- Product list -->
+        <div 
+          *ngFor="let product of filteredProducts; trackBy: trackByItemCode; let i = index"
+          class="product-item"
+          (click)="selectProduct(product)"
+          (mouseenter)="onMouseEnter(i)"
+          [class.selected]="isProductSelected(product)"
+          [class.highlighted]="isHighlighted(i)"
+          [id]="'product-' + i"
+          role="option"
+          [attr.aria-selected]="isProductSelected(product)">
+          
+          <div class="product-main">
+            <div class="product-header">
+              <div class="product-header-left">
+                <span class="product-code">{{ product.itemCode }}</span>
+                <span *ngIf="isRecentProduct(product)" class="recent-badge" title="Recently used">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6l4 4"></path>
+                    <path d="m21 9-9 9-9-9"></path>
+                  </svg>
+                  Recent
+                </span>
+                <!-- Selection indicator -->
+                <span *ngIf="isProductSelected(product)" class="selected-badge" title="Selected">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  Selected
+                </span>
+              </div>
+              <span class="product-price">₹{{ product.unitPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="product-description">{{ product.description }}</div>
+          </div>
+          
+          <div class="product-meta">
+            <span class="product-category">{{ product.category }}</span>
+            <span class="product-subcategory" *ngIf="product.subcategory">{{ product.subcategory }}</span>
+            <span class="product-brand" *ngIf="product.brand">{{ product.brand }}</span>
+            <span class="product-unit">{{ product.unit }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

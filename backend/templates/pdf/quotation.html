@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quotation PDF</title>
+
+<style>
+/* =========================
+   GLOBAL PDF STYLES
+========================= */
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+    color: #000;
+}
+
+.page {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm;
+    box-sizing: border-box;
+    page-break-after: always;
+    position: relative;
+}
+
+.page:last-child {
+    page-break-after: avoid;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header p {
+    margin: 2px 0;
+}
+
+.logo {
+    width: 120px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    position: absolute;
+    bottom: 20mm;
+    left: 20mm;
+    right: 20mm;
+    font-size: 9px;
+    text-align: center;
+    border-top: 1px solid #999;
+    padding-top: 6px;
+}
+
+.footer p {
+    margin: 2px 0;
+}
+
+/* =========================
+   QUOTATION SUMMARY PAGE
+========================= */
+
+.summary-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 15px 0 20px;
+    text-decoration: underline;
+    letter-spacing: 0.5px;
+}
+
+/* =========================
+   SUMMARY TABLE (NO GAPS + ZEBRA)
+========================= */
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse; /* removes spacing */
+    font-size: 11px;
+}
+
+.summary-table thead th {
+    padding: 6px 8px;
+    border-bottom: 2px solid #000;
+    text-align: left;
+}
+
+/* Right aligned numeric columns */
+.summary-table thead th:nth-child(3),
+.summary-table thead th:nth-child(4),
+.summary-table thead th:nth-child(5),
+.summary-table tbody td:nth-child(3),
+.summary-table tbody td:nth-child(4),
+.summary-table tbody td:nth-child(5) {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Zebra rows */
+.summary-table tbody tr:nth-child(odd) {
+    background-color: #c9c9c9;
+}
+
+.summary-table tbody tr:nth-child(even) {
+    background-color: #e5e5e5;
+}
+
+.summary-table tbody td {
+    padding: 6px 8px;
+    border: none;
+    vertical-align: top;
+}
+
+.summary-table tbody td:first-child {
+    font-weight: bold;
+    width: 8%;
+}
+
+/* =========================
+   FINANCIAL TABLE
+========================= */
+
+.financial-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 11px;
+}
+
+.financial-table td {
+    padding: 6px 8px;
+    border-top: 1px solid #000;
+}
+
+.financial-table td:last-child {
+    text-align: right;
+    font-weight: bold;
+}
+
+.financial-table tr:last-child td {
+    border-top: 2px solid #000;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<!-- =========================
+     QUOTATION SUMMARY PAGE
+========================= -->
+<div class="page summary-page">
+    <div class="header">
+        <div>
+            <p>{{quoteRef}}</p>
+            <p><strong>PRICE:</strong> {{getCurrency pricing.currency}}</p>
+            <p>{{date}}</p>
+        </div>
+        <img src="{{logoPath}}" class="logo" alt="PENTA Logo">
+    </div>
+
+    <div class="summary-title">QUOTATION SUMMARY</div>
+
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Unit amount ({{getCurrency pricing.currency}})</th>
+                <th>Total amount ({{getCurrency pricing.currency}})</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each items}}
+            <tr>
+                <td>ITEM-{{@index}}</td>
+                <td>{{description}}</td>
+                <td>{{quantity}}</td>
+                <td>{{formatCurrency unitPrice}}</td>
+                <td>{{formatCurrency totalPrice}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <table class="financial-table">
+        <tr>
+            <td>PRICE ({{getCurrency pricing.currency}})</td>
+            <td></td><td></td><td></td>
+            <td>{{formatCurrency pricing.subtotal}}</td>
+        </tr>
+        <tr>
+            <td>VAT {{pricing.vatRate}}%</td>
+            <td></td><td></td><td></td>
+            <td>{{formatCurrency pricing.vatAmount}}</td>
+        </tr>
+        <tr>
+            <td><strong>NET TOTAL ({{getCurrency pricing.currency}})</strong></td>
+            <td></td><td></td><td></td>
+            <td><strong>{{formatCurrency pricing.totalAmount}}</strong></td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p>PENTA For Hospitals and Schools Furniture Manufacturing L.L.C., Ajman, UAE</p>
+        <p>Tel : +971 6 563 2822, Email: info@penta-indust.com, www.penta-indust.com</p>
+        <p>Page <span class="pageNumber"></span> of <span class="totalPages"></span></p>
+    </div>
+</div>
+</body>
+</html>

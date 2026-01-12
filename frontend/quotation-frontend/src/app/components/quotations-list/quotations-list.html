@@ -1,0 +1,119 @@
+<div class="quotations-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-info">
+      <h1>Quotations</h1>
+      <p>Manage and track all your quotations in one place</p>
+    </div>
+    <div class="page-actions">
+      <button class="action-btn primary-btn" routerLink="/create">
+        <i class="fas fa-plus"></i>
+        New Quotation
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search quotations by number, customer, or materials..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading quotations...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredQuotations.length === 0 && quotations.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-file-invoice"></i>
+      </div>
+      <h3>No quotations yet</h3>
+      <p>Create your first quotation to get started.</p>
+      <button class="action-btn primary-btn" routerLink="/create">
+        <i class="fas fa-plus"></i>
+        Create First Quotation
+      </button>
+    </div>
+
+    <!-- No Search Results -->
+    <div *ngIf="!loading && filteredQuotations.length === 0 && quotations.length > 0" class="no-results">
+      <div class="empty-icon">
+        <i class="fas fa-search"></i>
+      </div>
+      <h3>No results found</h3>
+      <p>Try adjusting your search criteria.</p>
+    </div>
+    
+    <!-- Quotations Table -->
+    <div *ngIf="!loading && filteredQuotations.length > 0" class="quotations-table">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>QUOTATION NUMBER</th>
+            <th>DATE CREATED</th>
+            <th>FILE SIZE</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let quotation of filteredQuotations">
+            <td class="quotation-ref">{{ quotation.quoteRef }}</td>
+            <td class="date">{{ formatDate(quotation.createdAt) }}</td>
+            <td class="file-size">{{ formatFileSize(quotation.size) }}</td>
+            <td>
+              <span class="status-badge status-ready">Ready</span>
+            </td>
+            <td class="actions">
+              <button 
+                class="action-btn edit-btn" 
+                (click)="editQuotation(quotation.id)"
+                title="Edit Quotation">
+                <i class="fas fa-edit"></i>
+                Edit
+              </button>
+              <button 
+                class="action-btn secondary-btn" 
+                (click)="viewQuotation(quotation.quoteRef)"
+                title="View PDF">
+                <i class="fas fa-eye"></i>
+                View
+              </button>
+              <div class="download-buttons">
+                <div class="download-group">
+                  <span class="group-label">PDF</span>
+                  <button 
+                    class="action-btn quotation-btn" 
+                    (click)="downloadQuotationPDF(quotation.quoteRef)"
+                    title="Download Quotation PDF">
+                    <i class="fas fa-file-pdf"></i>
+                    Quotation
+                  </button>
+                  <button 
+                    class="action-btn bom-btn" 
+                    (click)="downloadBOMPDF(quotation.quoteRef)"
+                    title="Download BOM PDF">
+                    <i class="fas fa-list-ul"></i>
+                    BOM
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

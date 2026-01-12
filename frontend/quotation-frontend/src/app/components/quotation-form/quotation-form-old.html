@@ -1,0 +1,192 @@
+<div class="quotation-form">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Create New Quotation</h1>
+      <p>Generate professional quotations with automatic PDF creation</p>
+    </div>
+    <div class="page-actions">
+      <div class="status-indicator" [class.active]="quotationForm.valid">
+        <span class="status-text">{{ quotationForm.valid ? 'Ready to Generate' : 'Form Incomplete' }}</span>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()" class="quotation-form-content">
+    
+    <!-- Client Information -->
+    <div class="form-section">
+      <h2>Client Information</h2>
+      <div formGroupName="clientInfo" class="form-group">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Client Name *</label>
+            <input type="text" formControlName="name" placeholder="Enter client name" required>
+          </div>
+          <div class="form-field">
+            <label>Contact Person</label>
+            <input type="text" formControlName="contactPerson" placeholder="Enter contact person">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" formControlName="email" placeholder="Enter email">
+          </div>
+          <div class="form-field">
+            <label>Phone</label>
+            <input type="tel" formControlName="phone" placeholder="Enter phone number">
+          </div>
+        </div>
+        <div class="form-field full-width">
+          <label>Address</label>
+          <textarea formControlName="address" placeholder="Enter address" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Information -->
+    <div class="form-section">
+      <h2>Project Information</h2>
+      <div formGroupName="projectInfo" class="form-group">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Project Name *</label>
+            <input type="text" formControlName="name" placeholder="Enter project name" required>
+          </div>
+          <div class="form-field">
+            <label>Location</label>
+            <input type="text" formControlName="location" placeholder="Enter location">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Inquiry No.</label>
+            <input type="text" formControlName="inquiryNo" placeholder="Enter inquiry number">
+          </div>
+          <div class="form-field">
+            <label>Inquiry Date</label>
+            <input type="date" formControlName="inquiryDate">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Drawing No.</label>
+          <input type="text" formControlName="drawingNo" placeholder="Enter drawing number">
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Items</h2>
+        <button type="button" (click)="addItem()" class="btn btn-secondary">Add Item</button>
+      </div>
+      
+      <div formArrayName="items" class="items-container">
+        <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-form">
+          <div class="item-header">
+            <span class="item-number">Item {{ i + 1 }}</span>
+            <button type="button" (click)="removeItem(i)" class="btn btn-danger btn-sm" [disabled]="itemsArray.length === 1">
+              Remove
+            </button>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field description-field">
+              <label>Description *</label>
+              <textarea formControlName="description" placeholder="Enter item description" rows="2" required></textarea>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label>Quantity *</label>
+              <input type="number" formControlName="quantity" min="1" required>
+            </div>
+            <div class="form-field">
+              <label>Unit</label>
+              <input type="text" formControlName="unit">
+            </div>
+            <div class="form-field">
+              <label>Unit Price (AED) *</label>
+              <input type="number" formControlName="unitPrice" min="0" step="0.01" required>
+            </div>
+            <div class="form-field">
+              <label>Line Total (AED)</label>
+              <input type="number" [value]="(item.get('quantity')?.value || 0) * (item.get('unitPrice')?.value || 0)" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms and Conditions -->
+    <div class="form-section">
+      <h2>Terms and Conditions</h2>
+      <div formGroupName="terms" class="form-group">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Delivery Time</label>
+            <textarea formControlName="deliveryTime" rows="2"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Payment Terms</label>
+            <textarea formControlName="paymentTerms" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Warranty</label>
+            <input type="text" formControlName="warranty">
+          </div>
+          <div class="form-field">
+            <label>Currency</label>
+            <select formControlName="currency">
+              <option value="AED">AED</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="form-section">
+      <h2>Pricing</h2>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Discount %</label>
+          <input type="number" formControlName="discountPercentage" min="0" max="100" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>VAT %</label>
+          <input type="number" formControlName="vatPercentage" min="0" max="100" step="0.1">
+        </div>
+      </div>
+      
+      <div class="total-section">
+        <h3>Estimated Total: {{ calculateTotal() | currency:'AED':'symbol':'1.0-0' }}</h3>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="isGenerating">
+        {{ isGenerating ? 'Generating...' : 'Generate Quotation' }}
+      </button>
+      
+      <div class="export-actions" *ngIf="hasCurrentQuotation()">
+        <button type="button" (click)="exportToExcel()" class="btn btn-success">
+          Export to Excel
+        </button>
+        <button type="button" (click)="exportToPDF()" class="btn btn-info">
+          Export to PDF
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>

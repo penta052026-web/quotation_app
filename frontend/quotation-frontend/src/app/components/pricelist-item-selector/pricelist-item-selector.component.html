@@ -1,0 +1,144 @@
+<div class="pricelist-selector-container" [class.disabled]="disabled">
+  <div class="search-input-wrapper" [class.dropdown-open]="isDropdownOpen">
+    <input
+      #searchInput
+      type="text"
+      class="search-input"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (focus)="onInputFocus()"
+      (blur)="onInputBlur()"
+      (input)="onSearchInput($event)"
+      (keydown)="onKeyDown($event)"
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      [attr.aria-expanded]="isDropdownOpen"
+      aria-haspopup="listbox"
+      aria-label="Search pricelist items"
+    />
+    
+    <!-- Search/Clear Icon -->
+    <div class="input-icon">
+      <button 
+        *ngIf="searchQuery" 
+        type="button" 
+        class="clear-button"
+        (click)="clearSearch()"
+        aria-label="Clear search"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <div *ngIf="!searchQuery" class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Dropdown -->
+  <div 
+    *ngIf="isDropdownOpen" 
+    class="pricelist-dropdown"
+    role="listbox"
+    aria-label="Pricelist items"
+  >
+    <!-- Recent Items Section -->
+    <div *ngIf="!searchQuery.trim() && recentItems.length > 0" class="dropdown-section recent-items-section">
+      <div class="section-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+        </svg>
+        <span>Recent Items</span>
+        <span class="item-count">{{recentItems.length}}</span>
+      </div>
+      
+      <div class="recent-items-container">
+        <div 
+          *ngFor="let item of recentItems; let i = index"
+          class="dropdown-item recent-item"
+          [class.highlighted]="highlightedIndex === i"
+          (click)="selectItem(item)"
+          role="option"
+          [attr.aria-selected]="highlightedIndex === i"
+        >
+        <div class="item-content">
+          <div class="item-main">
+            <span class="item-description">{{ getItemDisplayText(item) }}</span>
+            <span class="item-price">{{ formatPrice(item.unitPrice, item.currency) }}</span>
+          </div>
+          <div class="item-meta">{{ getItemSubText(item) }}</div>
+        </div>
+        <div class="recent-badge">Recent</div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Search Results Section -->
+    <div *ngIf="searchQuery.trim()" class="dropdown-section">
+      <div class="section-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <span>Search Results</span>
+        <span class="item-count">{{filteredItems.length}}</span>
+      </div>
+      
+      <div 
+        *ngFor="let item of filteredItems; let i = index"
+        class="dropdown-item search-result"
+        [class.highlighted]="highlightedIndex === i"
+        (click)="selectItem(item)"
+        role="option"
+        [attr.aria-selected]="highlightedIndex === i"
+      >
+        <div class="item-content">
+          <div class="item-main">
+            <span class="item-description">{{ getItemDisplayText(item) }}</span>
+            <span class="item-price">{{ formatPrice(item.unitPrice, item.currency) }}</span>
+          </div>
+          <div class="item-meta">{{ getItemSubText(item) }}</div>
+        </div>
+        
+        <!-- Category Badge -->
+        <div class="category-badge" [attr.data-category]="(item.category || 'general').toLowerCase().replace(' ', '-')">
+          {{ item.category || 'General' }}
+        </div>
+      </div>
+
+      <!-- No Results -->
+      <div *ngIf="!isLoading && filteredItems.length === 0" class="no-results">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <span>No pricelist items found for "{{ searchQuery }}"</span>
+        <small>Try adjusting your search terms</small>
+      </div>
+    </div>
+
+    <!-- Empty State for Fresh Component -->
+    <div *ngIf="!searchQuery.trim() && recentItems.length === 0" class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M3 3h18v18H3V3z"></path>
+        <path d="M8 12h8"></path>
+        <path d="M8 16h6"></path>
+      </svg>
+      <span>Start typing to search pricelist items</span>
+      <small>Search by description, item code, or category</small>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,833 @@
+<div class="create-quotation-page">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>Loading quotation data...</p>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-info">
+      <h1>{{ isEditMode ? 'Edit Quotation' : 'Create New Quotation' }}</h1>
+      <p>{{ isEditMode ? 'Modify the quotation details below' : 'Fill in the information below to create a new quotation' }}</p>
+      <div *ngIf="isEditMode" class="edit-mode-indicator">
+        <i class="fas fa-edit"></i>
+        <span>Editing Mode</span>
+      </div>
+    </div>
+    <div class="page-actions">
+      <a routerLink="/quotations" class="action-btn secondary-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to List
+      </a>
+    </div>
+  </div>
+
+  <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()" class="form-container">
+    
+    <!-- Client Information Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Client Information</h2>
+        <p>Enter the client details for this quotation</p>
+      </div>
+      
+      <div formGroupName="clientInfo" class="section-content">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Client Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter client name" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Contact Person</label>
+            <input 
+              type="text" 
+              formControlName="contactPerson" 
+              placeholder="Enter contact person" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Email</label>
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="Enter email address" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Phone</label>
+            <input 
+              type="tel" 
+              formControlName="phone" 
+              placeholder="Enter phone number" 
+              class="form-input">
+          </div>
+        </div>
+        
+        <div class="form-field full-width">
+          <label>Address</label>
+          <textarea 
+            formControlName="address" 
+            placeholder="Enter complete address" 
+            rows="3" 
+            class="form-textarea"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quotation Information Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Quotation Details</h2>
+        <p>Enter the quotation number and basic information</p>
+      </div>
+      
+      <div formGroupName="quotationInfo" class="section-content">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Quotation Number (PQ) <span class="required">*</span></label>
+            <input 
+              type="text" 
+              formControlName="quotationNumber" 
+              placeholder="Enter quotation number (e.g., PQ25090001)" 
+              class="form-input"
+              maxlength="20">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Information Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Project Details</h2>
+        <p>Enter the project information and inquiry details</p>
+      </div>
+      
+      <div formGroupName="projectInfo" class="section-content">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Project Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter project name" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Location</label>
+            <input 
+              type="text" 
+              formControlName="location" 
+              placeholder="Enter project location" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Inquiry No.</label>
+            <input 
+              type="text" 
+              formControlName="inquiryNo" 
+              placeholder="Enter inquiry number" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Inquiry Date</label>
+            <input 
+              type="date" 
+              formControlName="inquiryDate" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Drawing No.</label>
+            <input 
+              type="text" 
+              formControlName="drawingNo" 
+              placeholder="Enter drawing number" 
+              class="form-input">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Section with Sub-parts -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Quotation Items</h2>
+        <p>Add items with their component parts from the pricelist</p>
+      </div>
+      
+      <div class="section-content">
+        <div class="section-actions">
+          <button type="button" (click)="addItem()" class="action-btn primary-btn">
+            <i class="fas fa-plus"></i>
+            Add Item
+          </button>
+        </div>
+        
+        <div formArrayName="items" class="items-list">
+          <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-card hierarchical">
+            <!-- Item Header -->
+            <div class="item-header">
+              <div class="item-title">
+                <span class="item-number">ITEM {{ i + 1 }}</span>
+                <button 
+                  type="button" 
+                  (click)="removeItem(i)" 
+                  class="action-btn danger-btn small" 
+                  [disabled]="itemsArray.length === 1">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Item Description (Manual Entry) -->
+            <div class="item-description-section">
+              <div class="form-field full-width">
+                <label>Item Description <span class="required">*</span></label>
+                <textarea 
+                  formControlName="itemHeader" 
+                  placeholder="Enter main item description (e.g., PHYSICS POSITION#1 TEACHER TABLE: W 2180 X D 750 X H 900 MM)" 
+                  rows="2" 
+                  class="form-textarea item-header-input"></textarea>
+              </div>
+            </div>
+            
+            <!-- Add Parts Section -->
+            <div class="parts-section">
+              <div class="parts-header">
+                <h4>Parts from Pricelist</h4>
+                <div class="parts-actions">
+                  <app-pricelist-item-selector 
+                    placeholder="Search and add parts..."
+                    (itemSelected)="onPricelistItemSelected(i, $event)">
+                  </app-pricelist-item-selector>
+                  <button type="button" (click)="addCustomPartToItem(i)" class="action-btn secondary-btn small">
+                    <i class="fas fa-plus"></i>
+                    Add Custom Part
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Parts Table -->
+              <div formArrayName="parts" class="parts-table" *ngIf="getPartsArray(i).length > 0">
+                <div class="table-header">
+                  <div class="col-num">#</div>
+                  <div class="col-part">PART</div>
+                  <div class="col-unit">UNIT</div>
+                  <div class="col-qty">QTY</div>
+                  <div class="col-price">PRICE</div>
+                  <div class="col-total">TOTAL</div>
+                  <div class="col-action">ACTION</div>
+                </div>
+                
+                <div *ngFor="let part of getPartsArray(i).controls; let j = index" 
+                     [formGroupName]="j" 
+                     class="table-row">
+                  <div class="col-num">{{ j + 1 }}</div>
+                  <div class="col-part">
+                    <input 
+                      type="text" 
+                      formControlName="part" 
+                      class="table-input part-input"
+                      [readonly]="!part.get('isCustomPart')?.value"
+                      [placeholder]="part.get('isCustomPart')?.value ? 'Enter custom part description' : ''"
+                      [class.custom-part]="part.get('isCustomPart')?.value">
+                  </div>
+                  <div class="col-unit">
+                    <input 
+                      type="text" 
+                      formControlName="unit" 
+                      class="table-input unit-input">
+                  </div>
+                  <div class="col-qty">
+                    <input 
+                      type="number" 
+                      formControlName="quantity" 
+                      min="1" 
+                      step="1"
+                      class="table-input qty-input"
+                      required>
+                  </div>
+                  <div class="col-price">
+                    <input 
+                      type="number" 
+                      formControlName="unitPrice" 
+                      min="0.01" 
+                      step="0.01" 
+                      class="table-input price-input"
+                      required>
+                  </div>
+                  <div class="col-total">
+                    <span class="total-value">
+                      {{ (part.get('quantity')?.value || 0) * (part.get('unitPrice')?.value || 0) | number:'1.2-2' }}
+                    </span>
+                  </div>
+                  <div class="col-action">
+                    <button 
+                      type="button" 
+                      (click)="removePartFromItem(i, j)" 
+                      class="action-btn danger-btn small">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Subtotal Row -->
+                <div class="table-row subtotal-row">
+                  <div class="col-num"></div>
+                  <div class="col-part subtotal-label">SUBTOTAL</div>
+                  <div class="col-unit"></div>
+                  <div class="col-qty"></div>
+                  <div class="col-price"></div>
+                  <div class="col-total subtotal-value">
+                    {{ calculateItemSubtotal(i) | number:'1.2-2' }}
+                  </div>
+                  <div class="col-action"></div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div *ngIf="getPartsArray(i).length === 0" class="empty-parts">
+                <i class="fas fa-inbox"></i>
+                <p>No parts added yet. Use the search above to add parts from the pricelist.</p>
+              </div>
+            </div>
+            
+            <!-- Image Upload Section -->
+            <div class="image-section">
+              <div class="image-header">
+                <h4>Item Images</h4>
+                <div class="image-actions">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    (change)="onImageSelected($event, i, false)" 
+                    #imageInput
+                    style="display: none;">
+                  <button 
+                    type="button" 
+                    (click)="imageInput.click()" 
+                    class="action-btn secondary-btn small">
+                    <i class="fas fa-plus"></i>
+                    Add Image
+                  </button>
+                  <span *ngIf="hasImages(i, false)" class="image-count">{{ getImageCount(i, false) }} image(s)</span>
+                </div>
+              </div>
+              
+              <!-- Images Grid -->
+              <div *ngIf="hasImages(i, false)" class="images-grid">
+                <div *ngFor="let image of getImagesArray(i, false).controls; let imgIndex = index" 
+                     class="image-item">
+                  <img [src]="image.get('data')?.value" alt="Item Image" class="preview-image">
+                  <div class="image-overlay">
+                    <button 
+                      type="button" 
+                      (click)="removeImage(i, imgIndex, false)" 
+                      class="remove-image-btn">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="image-info">
+                    <span class="image-name">{{ image.get('fileName')?.value }}</span>
+                    <span class="image-size">{{ (image.get('fileSize')?.value / 1024 / 1024).toFixed(2) }} MB</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div *ngIf="!hasImages(i, false)" class="empty-image">
+                <i class="fas fa-image"></i>
+                <p>No images added. Click "Add Image" to attach images to this item.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Items Section (Frontend-only items) -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Additional Items</h2>
+        <p>Add additional items that are not in the database (frontend-only, included in totals)</p>
+      </div>
+      
+      <div class="section-content">
+        <div class="section-actions">
+          <button type="button" (click)="addAdditionalItem()" class="action-btn secondary-btn">
+            <i class="fas fa-plus"></i>
+            Add Additional Item
+          </button>
+        </div>
+        
+        <div formArrayName="additionalItems" class="items-list">
+          <div *ngFor="let additionalItem of additionalItemsArray.controls; let i = index" [formGroupName]="i" class="item-card hierarchical additional-item">
+            <!-- Item Header -->
+            <div class="item-header">
+              <div class="item-title">
+                <span class="item-number">ADDITIONAL ITEM {{ i + 1 }}</span>
+                <button 
+                  type="button" 
+                  (click)="removeAdditionalItem(i)" 
+                  class="action-btn danger-btn small">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Item Description (Manual Entry) -->
+            <div class="item-description-section">
+              <div class="form-field full-width">
+                <label>Item Description <span class="required">*</span></label>
+                <textarea 
+                  formControlName="description" 
+                  placeholder="Enter detailed item description"
+                  rows="2"
+                  class="form-textarea"
+                  required></textarea>
+              </div>
+            </div>
+            
+            <!-- Parts from Pricelist -->
+            <div class="parts-section">
+              <div class="parts-header">
+                <h4>Parts from Pricelist</h4>
+                <button type="button" (click)="addPartToAdditionalItem(i)" class="action-btn primary-btn small">
+                  <i class="fas fa-plus"></i>
+                  Add Part
+                </button>
+              </div>
+              
+              <!-- Parts Table -->
+              <div formArrayName="parts" class="parts-table" *ngIf="getAdditionalPartsArray(i).length > 0">
+                <div class="table-header">
+                  <div class="col-num">#</div>
+                  <div class="col-part">PART</div>
+                  <div class="col-unit">UNIT</div>
+                  <div class="col-qty">QTY</div>
+                  <div class="col-price">PRICE</div>
+                  <div class="col-total">TOTAL</div>
+                  <div class="col-action">ACTION</div>
+                </div>
+                
+                <div *ngFor="let part of getAdditionalPartsArray(i).controls; let j = index" 
+                     [formGroupName]="j" 
+                     class="table-row">
+                  <div class="col-num">{{ j + 1 }}</div>
+                  <div class="col-part">
+                    <input 
+                      type="text" 
+                      formControlName="description" 
+                      placeholder="Enter part description"
+                      class="table-input part-input">
+                  </div>
+                  <div class="col-unit">
+                    <input 
+                      type="text" 
+                      formControlName="unit" 
+                      placeholder="Unit"
+                      class="table-input unit-input">
+                  </div>
+                  <div class="col-qty">
+                    <input 
+                      type="number" 
+                      formControlName="quantity" 
+                      min="1" 
+                      step="1"
+                      class="table-input qty-input"
+                      required>
+                  </div>
+                  <div class="col-price">
+                    <input 
+                      type="number" 
+                      formControlName="unitPrice" 
+                      min="0.01" 
+                      step="0.01" 
+                      placeholder="0.01"
+                      class="table-input price-input"
+                      required>
+                  </div>
+                  <div class="col-total">
+                    <span class="total-value">
+                      {{ (part.get('quantity')?.value || 0) * (part.get('unitPrice')?.value || 0) | number:'1.2-2' }}
+                    </span>
+                  </div>
+                  <div class="col-action">
+                    <button 
+                      type="button" 
+                      (click)="removePartFromAdditionalItem(i, j)" 
+                      class="action-btn danger-btn small">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Subtotal Row -->
+                <div class="table-row subtotal-row">
+                  <div class="col-num"></div>
+                  <div class="col-part subtotal-label">SUBTOTAL</div>
+                  <div class="col-unit"></div>
+                  <div class="col-qty"></div>
+                  <div class="col-price"></div>
+                  <div class="col-total subtotal-value">
+                    {{ calculateAdditionalItemSubtotal(i) | number:'1.2-2' }}
+                  </div>
+                  <div class="col-action"></div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div *ngIf="getAdditionalPartsArray(i).length === 0" class="empty-parts">
+                <i class="fas fa-inbox"></i>
+                <p>No parts added yet. Use the search above to add parts from the pricelist.</p>
+              </div>
+            </div>
+            
+            <!-- Image Upload Section for Additional Items -->
+            <div class="image-section">
+              <div class="image-header">
+                <h4>Item Images</h4>
+                <div class="image-actions">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    (change)="onImageSelected($event, i, true)" 
+                    #additionalImageInput
+                    style="display: none;">
+                  <button 
+                    type="button" 
+                    (click)="additionalImageInput.click()" 
+                    class="action-btn secondary-btn small">
+                    <i class="fas fa-plus"></i>
+                    Add Image
+                  </button>
+                  <span *ngIf="hasImages(i, true)" class="image-count">{{ getImageCount(i, true) }} image(s)</span>
+                </div>
+              </div>
+              
+              <!-- Images Grid -->
+              <div *ngIf="hasImages(i, true)" class="images-grid">
+                <div *ngFor="let image of getImagesArray(i, true).controls; let imgIndex = index" 
+                     class="image-item">
+                  <img [src]="image.get('data')?.value" alt="Item Image" class="preview-image">
+                  <div class="image-overlay">
+                    <button 
+                      type="button" 
+                      (click)="removeImage(i, imgIndex, true)" 
+                      class="remove-image-btn">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="image-info">
+                    <span class="image-name">{{ image.get('fileName')?.value }}</span>
+                    <span class="image-size">{{ (image.get('fileSize')?.value / 1024 / 1024).toFixed(2) }} MB</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div *ngIf="!hasImages(i, true)" class="empty-image">
+                <i class="fas fa-image"></i>
+                <p>No images added. Click "Add Image" to attach images to this item.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div *ngIf="additionalItemsArray.length === 0" class="empty-additional-items">
+          <i class="fas fa-plus-circle"></i>
+          <p>No additional items added yet. These items will be included in the quotation as regular items.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total & VAT Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Total & VAT Information</h2>
+        <p>Review totals and apply discount/VAT if applicable</p>
+      </div>
+      
+      <div class="section-content">
+        <div class="form-grid grid-4">
+          <div class="form-field">
+            <label>Subtotal</label>
+            <input 
+              type="number" 
+              [value]="calculateSubtotal()" 
+              readonly 
+              class="form-input readonly">
+          </div>
+          
+          <div class="form-field">
+            <label>Discount (%)</label>
+            <input 
+              type="number" 
+              formControlName="discountPercentage" 
+              min="0" 
+              max="100" 
+              step="0.1" 
+              placeholder="Enter discount percentage" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>VAT Applicable (5%)</label>
+            <input 
+              type="checkbox" 
+              formControlName="vatApplicable" 
+              class="form-checkbox">
+          </div>
+          
+          <div class="form-field">
+            <label>Total Price</label>
+            <input 
+              type="number" 
+              [value]="calculateTotal()" 
+              readonly 
+              class="form-input readonly total-price">
+          </div>
+        </div>
+        
+        <!-- Price Breakdown Display -->
+        <div class="price-breakdown" *ngIf="quotationForm.get('discountPercentage')?.value > 0">
+          <div class="breakdown-item">
+            <span class="label">Subtotal:</span>
+            <span class="value">{{ calculateSubtotal() | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-item discount">
+            <span class="label">Discount ({{ quotationForm.get('discountPercentage')?.value }}%):</span>
+            <span class="value">-{{ calculateDiscountAmount() | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-item">
+            <span class="label">After Discount:</span>
+            <span class="value">{{ calculateSubtotalAfterDiscount() | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-item" *ngIf="quotationForm.get('vatApplicable')?.value">
+            <span class="label">VAT (5%):</span>
+            <span class="value">{{ calculateVATAmount() | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-item total">
+            <span class="label">Total:</span>
+            <span class="value">{{ calculateTotal() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms and Conditions -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Terms and Conditions</h2>
+        <p>Specify delivery, payment, and warranty terms</p>
+      </div>
+      
+      <div formGroupName="terms" class="section-content">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Delivery Time</label>
+            <textarea 
+              formControlName="deliveryTime" 
+              placeholder="Enter delivery timeframe" 
+              rows="3" 
+              class="form-textarea"></textarea>
+          </div>
+          
+          <div class="form-field">
+            <label>Payment Terms</label>
+            <textarea 
+              formControlName="paymentTerms" 
+              placeholder="Enter payment terms" 
+              rows="3" 
+              class="form-textarea"></textarea>
+          </div>
+          
+          <div class="form-field">
+            <label>Warranty</label>
+            <input 
+              type="text" 
+              formControlName="warranty" 
+              placeholder="Enter warranty details" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Currency</label>
+            <select formControlName="currency" class="form-select">
+              <option value="AED">AED</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank Details -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Bank Details</h2>
+        <p>Company banking information for payments</p>
+      </div>
+      
+      <div formGroupName="bankDetails" class="section-content">
+        <div class="form-grid grid-2">
+          <div class="form-field">
+            <label>Bank Name</label>
+            <input 
+              type="text" 
+              formControlName="bank" 
+              placeholder="Enter bank name" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Account Name</label>
+            <input 
+              type="text" 
+              formControlName="name" 
+              placeholder="Enter account name" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>Account Number</label>
+            <input 
+              type="text" 
+              formControlName="accountNo" 
+              placeholder="Enter account number" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>IBAN (AED)</label>
+            <input 
+              type="text" 
+              formControlName="ibanAED" 
+              placeholder="Enter IBAN for AED" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>IBAN (USD)</label>
+            <input 
+              type="text" 
+              formControlName="ibanUSD" 
+              placeholder="Enter IBAN for USD" 
+              class="form-input">
+          </div>
+          
+          <div class="form-field">
+            <label>IBAN (EUR)</label>
+            <input 
+              type="text" 
+              formControlName="ibanEUR" 
+              placeholder="Enter IBAN for EUR" 
+              class="form-input">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Information -->
+    <div class="debug-info" *ngIf="getButtonDisabledReasons().length > 0">
+      <div class="debug-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Generate button is disabled because:</span>
+      </div>
+      <ul class="debug-reasons">
+        <li *ngFor="let reason of getButtonDisabledReasons()">{{ reason }}</li>
+      </ul>
+      <div class="debug-details">
+        <p><strong>Form Valid:</strong> {{ quotationForm.valid ? 'Yes' : 'No' }}</p>
+        <p><strong>Items Count:</strong> {{ itemsArray.length }}</p>
+        <p><strong>Total Items with Parts:</strong> {{ itemsArray.length - (hasItemsWithoutParts() ? 1 : 0) }}</p>
+        <p><strong>Subtotal:</strong> {{ calculateSubtotal() | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="action-btn primary-btn large" 
+        [disabled]="isLoading || isGenerating || !quotationForm.valid || hasZeroPricedItems() || hasItemsWithoutParts() || calculateSubtotal() === 0">
+        <i class="fas fa-save" *ngIf="!isGenerating && isEditMode"></i>
+        <i class="fas fa-file-pdf" *ngIf="!isGenerating && !isEditMode"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="isGenerating"></i>
+        {{ isEditMode ? 'Update Quotation' : 'Generate Quotation' }}
+      </button>
+    </div>
+    
+    <!-- Download Actions - Show after quotation is generated -->
+    <div class="download-actions" *ngIf="hasCurrentQuotation()">
+      <div class="download-section-header">
+        <h3><i class="fas fa-download"></i> Download Options</h3>
+        <p>Your quotation has been generated. Choose which document to download:</p>
+      </div>
+      
+      <div class="download-buttons">
+        <!-- PDF Downloads -->
+        <div class="download-group">
+          <h4>PDF Downloads</h4>
+          <div class="button-group">
+            <button 
+              type="button" 
+              class="action-btn secondary-btn large" 
+              (click)="downloadQuotationPDF()">
+              <i class="fas fa-file-pdf"></i>
+              Download Quotation PDF
+            </button>
+            
+            <button 
+              type="button" 
+              class="action-btn success-btn large" 
+              (click)="downloadBOMPDF()">
+              <i class="fas fa-list-ul"></i>
+              Download BOM PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Excel Downloads -->
+        <div class="download-group">
+          <h4>Excel Downloads</h4>
+          <div class="button-group">
+            <button 
+              type="button" 
+              class="action-btn excel-btn large" 
+              (click)="downloadQuotationExcel()">
+              <i class="fas fa-file-excel"></i>
+              Download Quotation Excel
+            </button>
+            
+            <button 
+              type="button" 
+              class="action-btn bom-excel-btn large" 
+              (click)="downloadBOMExcel()">
+              <i class="fas fa-table"></i>
+              Download BOM Excel
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </form>
+</div>

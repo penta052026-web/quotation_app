@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+
+# Environment variables
+.env
+.env.*
+
+# Database
+*.sqlite3
+*.db
+
+# Generated files
+/backend/quotation_generated.xlsx
+/backend/test-output.pdf
+/backend/debug-output.html
+/backend/server.log
+
+# Logs
+*.log
+
+# Build outputs
+frontend/quotation-frontend/dist/
+frontend/quotation-frontend/.angular/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
