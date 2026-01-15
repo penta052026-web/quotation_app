@@ -1,6 +1,49 @@
-# Node.js dependencies
+# # Node.js dependencies
+# node_modules/
+# npm-debug.log
+
+# # Environment variables
+# .env
+# .env.*
+
+# # Database
+# *.sqlite3
+# *.db
+
+# # Generated files
+# /backend/quotation_generated.xlsx
+# /backend/test-output.pdf
+# /backend/debug-output.html
+# /backend/server.log
+
+# # Logs
+# *.log
+
+# # Build outputs
+# frontend/quotation-frontend/dist/
+# frontend/quotation-frontend/.angular/
+# backend/excel
+# backend/pdf
+
+
+# # IDE specific files
+# .vscode/
+# .idea/
+
+# # OS generated files
+# .DS_Store
+# .DS_Store?
+# Thumbs.db
+
+
+
+
+
+
+# Dependencies
 node_modules/
-npm-debug.log
+frontend/quotation-frontend/node_modules/
+backend/node_modules/
 
 # Environment variables
 .env
@@ -9,25 +52,48 @@ npm-debug.log
 # Database
 *.sqlite3
 *.db
-
-# Generated files
-/backend/quotation_generated.xlsx
-/backend/test-output.pdf
-/backend/debug-output.html
-/backend/server.log
+!database.backup.*.sqlite3  # Keep backup files
 
 # Logs
 *.log
+npm-debug.log*
 
-# Build outputs
-frontend/quotation-frontend/dist/
-frontend/quotation-frontend/.angular/
+# Generated files
+/backend/excel
+/backend/pdf
+/backend/database.xlsx
+
+/backend/quotation_generated.xlsx
+/backend/pricelist.xlsx
+/backend/test-output.pdf
+/backend/debug-output.html
+/backend/server.log
+/frontend/quotation-frontend/dist/
 
 # IDE specific files
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS generated files
 .DS_Store
 .DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Application specific
+penta logo.png
+
+# Local development
+/temp/
+/tmp/
+
+
+Quotation
