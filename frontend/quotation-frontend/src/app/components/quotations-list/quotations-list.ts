@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { QuotationService } from '../../services/quotation';
+import { API_CONFIG } from '../../api.config';
+
 
 @Component({
   selector: 'app-quotations-list',
@@ -102,8 +104,8 @@ export class QuotationsList implements OnInit {
     const filename = `quotation_${quoteRef}.pdf`;
     
     // Try new folder structure first
-    const newUrl = `http://localhost:3000/quotation-files/${quoteRef}/Quotation/PDF/${filename}`;
-    const fallbackUrl = `http://localhost:3000/pdf/${filename}`;
+    const newUrl = `${API_CONFIG.BASE_URL}/quotation-files/${quoteRef}/Quotation/PDF/${filename}`;
+    const fallbackUrl = `${API_CONFIG.BASE_URL}/pdf/${filename}`;
     
     // Create download link
     const link = document.createElement('a');
@@ -127,7 +129,7 @@ export class QuotationsList implements OnInit {
     // Generate and download BOM PDF for this quotation
     this.quotationService.generateBOMByQuoteRef(quoteRef).subscribe({
       next: (response) => {
-        window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+        window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
       },
       error: (error) => {
         console.error('Error downloading BOM PDF:', error);
@@ -146,8 +148,8 @@ export class QuotationsList implements OnInit {
     const filename = `quotation_${quoteRef}.pdf`;
     
     // Try new folder structure first
-    const newUrl = `http://localhost:3000/quotation-files/${quoteRef}/Quotation/PDF/${filename}`;
-    const fallbackUrl = `http://localhost:3000/pdf/${filename}`;
+    const newUrl = `${API_CONFIG.BASE_URL}/quotation-files/${quoteRef}/Quotation/PDF/${filename}`;
+    const fallbackUrl = `${API_CONFIG.BASE_URL}/pdf/${filename}`;
     
     // Try to open the PDF in a new tab
     // First try the new URL, if it fails, try the fallback

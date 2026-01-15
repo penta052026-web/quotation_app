@@ -10,6 +10,9 @@ import { Product, QuotationRequest } from '../../models/models';
 import { Observable, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PricelistItemSelectorComponent } from '../pricelist-item-selector/pricelist-item-selector.component';
 
+
+import { API_CONFIG } from '../../api.config';
+
 interface PartType {
   id?: string;
   part?: string; // Form control name for part description
@@ -1137,7 +1140,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportToExcel(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Export error:', error);
@@ -1152,7 +1155,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportToPDF(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Export error:', error);
@@ -1167,7 +1170,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportToPDF(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Error downloading quotation PDF:', error);
@@ -1182,7 +1185,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportBOMToPDF(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Error downloading BOM PDF:', error);
@@ -1197,7 +1200,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportToExcel(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Error downloading quotation Excel:', error);
@@ -1212,7 +1215,7 @@ export class QuotationForm implements OnInit {
     if (currentQuotation) {
       this.quotationService.exportBOMToExcel(currentQuotation).subscribe({
         next: (response) => {
-          window.open(`http://localhost:3000${response.downloadUrl}`, '_blank');
+          window.open(`${API_CONFIG.BASE_URL}${response.downloadUrl}`, '_blank');
         },
         error: (error) => {
           console.error('Error downloading BOM Excel:', error);

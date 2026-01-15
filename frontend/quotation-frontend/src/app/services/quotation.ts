@@ -3,12 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { Quotation, QuotationRequest, ExportResponse } from '../models/models';
+import { API_CONFIG } from '../api.config';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuotationService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = '${API_CONFIG.BASE_URL}/api';
   private currentQuotationSubject = new BehaviorSubject<Quotation | null>(null);
   public currentQuotation$ = this.currentQuotationSubject.asObservable();
 
@@ -108,7 +110,7 @@ export class QuotationService {
         this.exportToPDF(quotation).pipe(
           map(exportResponse => ({
             quotation,
-            downloadUrl: `http://localhost:3000${exportResponse.downloadUrl}`
+            downloadUrl: `${API_CONFIG.BASE_URL}${exportResponse.downloadUrl}`
           }))
         )
       )
@@ -137,7 +139,7 @@ export class QuotationService {
           if (!url) return;
           
           setTimeout(() => {
-            const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+            const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
             
             // Use HttpClient to download as blob
             this.http.get(fullUrl, {
@@ -203,8 +205,8 @@ export class QuotationService {
       }),
       map((response: any) => ({
         quotation: response.quotation,
-        quotationUrl: response.pdfs?.quotationPdf?.downloadUrl ? `http://localhost:3000${response.pdfs.quotationPdf.downloadUrl}` : '',
-        bomUrl: response.pdfs?.bomPdf?.downloadUrl ? `http://localhost:3000${response.pdfs.bomPdf.downloadUrl}` : ''
+        quotationUrl: response.pdfs?.quotationPdf?.downloadUrl ? `${API_CONFIG.BASE_URL}${response.pdfs.quotationPdf.downloadUrl}` : '',
+        bomUrl: response.pdfs?.bomPdf?.downloadUrl ? `${API_CONFIG.BASE_URL}${response.pdfs.bomPdf.downloadUrl}` : ''
       }))
     );
   }
