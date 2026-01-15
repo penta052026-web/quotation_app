@@ -58,6 +58,12 @@ backend/node_modules/
 *.log
 npm-debug.log*
 
+
+# Ignore all Excel and PDF files
+*.xlsx
+*.xls
+*.pdf
+
 # Generated files
 /backend/excel
 /backend/pdf
