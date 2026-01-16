@@ -52,7 +52,7 @@ backend/node_modules/
 # Database
 *.sqlite3
 *.db
-!database.backup.*.sqlite3  # Keep backup files
+
 
 # Logs
 *.log
