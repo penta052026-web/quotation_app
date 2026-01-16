@@ -16,7 +16,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+// 🔴 THIS IS REQUIRED
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// 🔴 THIS LINE IS CRITICAL
+app.options('*', cors());
+
+// Middleware to parse JSON
+app.use(express.json()); 
+
+
+
 app.use(bodyParser.json({ limit: '50mb' })); // Increase payload limit for images
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -52,6 +67,11 @@ if (!fs.existsSync(excelBomDir)) {
 }
 
 // Routes
+
+app.post('/api/test', (req, res) => {
+  console.log(req.body); // should show JSON payload
+  res.json({ message: 'POST works', received: req.body });
+});
 
 // Health check
 app.get('/', (req, res) => {
