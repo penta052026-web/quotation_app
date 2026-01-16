@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install -g @angular/cli && npm run build --prefix frontend/quotation-frontend",
+  "buildCommand": "cd frontend/quotation-frontend && npm install && npx ng build",
   "outputDirectory": "frontend/quotation-frontend/dist/quotation-frontend",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
